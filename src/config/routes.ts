@@ -1,9 +1,9 @@
 export default {
-    'root': '#', //Rota da API
-    'criar-usuario': () => '/usuarios', //url de criar usuários
-    'login': () => '/login', //url de login
-    'listar-cursos': ( filtro ?: any ) => '/cursos' + filtro ? '?' + new URLSearchParams(filtro).toString() : '', //url de listar cursos
-    'inscrever-curso': ( idCurso : string ) => `/cursos/${ idCurso }`, //url de se inscrever em curso,
-    'cancelar-curso': ( idCurso : string ) => `/cursos/${ idCurso }`, //url de cancelar inscricao
-    'meus-cursos': ( idUsuario : string ) => `/${ idUsuario }`, //url de listar meus cursos
+    'root': '#', 
+    'criar-usuario': () => '/usuarios', 
+    'login': () => '/login', 
+    'listar-cursos': ( filtro ?: any ) => '/cursos' + filtro ? '?' + new URLSearchParams(filtro).toString() : '', 
+    'inscrever-curso': ( idCurso : string ) => `/cursos/${ idCurso }`, 
+    'cancelar-curso': ( idCurso : string ) => `/cursos/${ idCurso }`, 
+    'meus-cursos': ( idUsuario : string ) => `/${ idUsuario }`, 
 }

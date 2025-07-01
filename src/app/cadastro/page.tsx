@@ -1,33 +1,93 @@
-import Link from "next/link";
+'use client'
 
-export default function Page() {
+import { useState } from 'react'
+import api from '@/services/api'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/contexts/AuthContext'
+
+export default function CadastroPage() {
+  const router = useRouter()
+  const { login } = useAuth()       
+  const [form, setForm] = useState({
+    nome: '',
+    email: '',
+    senha: '',
+    nascimento: '',
+  })
+  const [erro, setErro] = useState('')
+
+  
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setForm({ ...form, [e.target.name]: e.target.value })
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setErro('')
+
+    try {
+      
+      await api.post('/usuarios', form, { withCredentials: true })
+
+      
+      await login(form.email, form.senha)
+
+      
+      router.push('/') 
+    } catch (err: any) {
+      const msg = err?.response?.data?.mensagem || 'Erro ao cadastrar'
+      setErro(msg)
+    }
+  }
+
+  
   return (
-    <main>      
-      <form className="flex flex-col gap-4">
-        <h2 className="page-title">Cadastro</h2>
-        <p>Eu já tenho cadastro, quero <Link href="/login">fazer login.</Link></p>
-        <div className="max-w-96 flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <label htmlFor="nome">Nome</label>
-            <input type="nome" required name="nome" id="nome" className="border h-10 rounded-xl focus:outline-none focus:border-indigo-300 px-4 py-2" />
-          </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="nascimento">Data de nascimento</label>
-            <input type="date" required name="nascimento" id="nascimento" className="border h-10 rounded-xl focus:outline-none focus:border-indigo-300 px-4 py-2" />
-          </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="email">E-mail</label>
-            <input type="email" required name="email" id="email" className="border h-10 rounded-xl focus:outline-none focus:border-indigo-300 px-4 py-2" />
-          </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="senha">Senha</label>
-            <input type="password" required name="senha" id="senha" className="border h-10 rounded-xl focus:outline-none focus:border-indigo-300 px-4 py-2" />
-          </div>
-        </div>
-        <div className="flex flex-row justify-between items-end">
-          <button type="submit" className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-lg">Cadastrar</button>
-        </div>
+    <div className="max-w-md mx-auto mt-10 p-6 border rounded bg-white shadow">
+      <h2 className="text-xl font-bold mb-4">Cadastro de Aluno</h2>
+
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <input
+          type="text"
+          name="nome"
+          placeholder="Nome"
+          value={form.nome}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="email"
+          name="email"
+          placeholder="E-mail"
+          value={form.email}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="password"
+          name="senha"
+          placeholder="Senha"
+          value={form.senha}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="text"
+          name="nascimento"
+          placeholder="Data de nascimento (dd/mm/aaaa)"
+          value={form.nascimento}
+          onChange={handleChange}
+          required
+        />
+
+        <button
+          type="submit"
+          className="bg-indigo-700 text-white py-2 rounded hover:bg-indigo-900"
+        >
+          Cadastrar
+        </button>
+
+        {erro && <p className="text-red-600">{erro}</p>}
       </form>
-    </main>
-  );
+    </div>
+  )
 }

@@ -1,23 +1,73 @@
-import Link from "next/link";
+'use client';
 
-export default function Page() {
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+
+
+export default function LoginPage() {
+  const router = useRouter();
+  const { login } = useAuth();                   
+
+  
+  const [form, setForm] = useState({ email: '', senha: '' });
+  const [erro, setErro] = useState('');
+
+  
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setErro('');
+
+    try {
+      
+      const id = await login(form.email, form.senha);
+
+      
+      router.push(`/usuario/${id}`);
+    } catch (err: any) {
+      
+      const mensagem = err?.response?.data?.mensagem || 'Erro ao fazer login';
+      setErro(mensagem);
+    }
+  }
+
+  
   return (
-    <main>      
-      <form className="p-6 bg-indigo-50 max-w-96 rounded-3xl flex flex-col gap-4">
-        <h2 className="page-title">Login</h2>
-        <div className="flex flex-col gap-2">
-          <label htmlFor="email">E-mail</label>
-          <input type="email" required name="email" id="email" className="border h-10 rounded-xl focus:outline-none focus:border-indigo-300 px-4 py-2" />
+    <div className="max-w-md mx-auto mt-12 p-6 bg-white rounded shadow">
+      <h2 className="text-2xl font-bold mb-4">Login</h2>
+
+      <form className="space-y-4" onSubmit={handleSubmit}>
+        <div>
+          <label className="block mb-1">E-mail</label>
+          <input
+            type="email"
+            required
+            className="w-full border p-2 rounded"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+          />
         </div>
-        <div className="flex flex-col gap-2">
-          <label htmlFor="senha">Senha</label>
-          <input type="password" required name="senha" id="senha" className="border h-10 rounded-xl focus:outline-none focus:border-indigo-300 px-4 py-2" />
+
+        <div>
+          <label className="block mb-1">Senha</label>
+          <input
+            type="password"
+            required
+            className="w-full border p-2 rounded"
+            value={form.senha}
+            onChange={(e) => setForm({ ...form, senha: e.target.value })}
+          />
         </div>
-        <div className="flex flex-row justify-between items-end">
-          <Link href="/cadastro" className="my-3">Fazer cadastro</Link>
-          <button type="submit" className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-lg">Entrar</button>
-        </div>
+
+        {erro && <p className="text-red-600">{erro}</p>}
+
+        <button
+          type="submit"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 w-full rounded"
+        >
+          Entrar
+        </button>
       </form>
-    </main>
+    </div>
   );
 }
